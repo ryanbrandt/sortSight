@@ -84,13 +84,19 @@
 		      				mySort.ms = mySort.endTime(start);
 		      				break;
 		      			case 'Q':
-		      				//do qs
+		      				start = mySort.startTime();
+		      				mySort.quickSort(0, mySort.n-1, Integer.parseInt(request.getParameter("threshold")));
+		      				mySort.ms = mySort.endTime(start);
 		      				break;
 		      			case 'H':
-		      				//do hs
+		      				start = mySort.startTime();
+		      				mySort.heapSort();
+		      				mySort.ms = mySort.endTime(start);
 		      				break;
 		      			case 'I':
-		      				//do is
+		      				start = mySort.startTime();
+		      				mySort.insertionSort(0, mySort.n-1);
+		      				mySort.ms = mySort.endTime(start);
 		      				break;
 		      			case 'B':
 		      				start = mySort.startTime();
@@ -121,7 +127,7 @@
 		      				out.println("<th style=padding:10px;>Input</th>");
 		      				out.println("</tr>");
 		      				while(q.next()){
-		      					out.println("<tr>");
+		      				
 		      					out.println("<td>" + q.getString(1) + "ms</td>");
 		      					out.println("<td>" + q.getString(2) + "</td>");
 		      					out.println("<td>" + q.getString(4) + "</td>");
@@ -129,6 +135,7 @@
 		      				}
 		      				
 		      				// get summary statistics here
+		      				
 		     				
 		      			} catch(Exception e){
 		      				out.println("hmm, database error: " + e);

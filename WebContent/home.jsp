@@ -44,7 +44,7 @@
       		<form action="home_response.jsp">
       			<div class="sort-form" style="text-align: center; background-color: rgb(0,0,0,0.2); padding: 25px;">
 	      			<h3>Size of Input</h3>
-	      			<select name="size">
+	      			<select name="size" id="size-drop">
 	      				<option value="100">100</option>
 	      				<option value="1000">1,000</option>
 	      				<option value="10000">10,000</option>
@@ -85,7 +85,19 @@ $('#method-drop').on('change', function(){
 		document.getElementById("quick-buttons").innerHTML = '<h3>' + 'InsertionSort Threshold' + '</h3>' + '<small style="font-style:italic;">' + 'At what size n should QuickSort transition to InsertionSort?' + '</small><br/>' + '<input type="radio" name="threshold" value="25">'
 		+ ' 25' + '</input>   ' + '<input type ="radio" name="threshold" value="50">' + ' 50' + '</input>   ' + '<input type="radio" name="threshold" value="75">'
 		+ ' 75' + '</input>   ' + '<input type="radio" name="threshold" value="100">' + ' 100' + '</input>';
+	} else if((method == "BubbleSort" || method == "InsertionSort") && document.getElementById("size-drop").value > 10000){
+		document.getElementById("quick-buttons").innerHTML = '<small style=font-style: italic;>' + '(this might take a while)' + '</small>';
 	} else {
+		document.getElementById("quick-buttons").innerHTML = "";
+	}
+});
+//other end for large n bubblesort
+$('#size-drop').on('change', function(){
+	var size = $(this).val();
+	var method = document.getElementById("method-drop").value;
+	if(size > 10000 && (method == "BubbleSort" || method == "InsertionSort")){
+		document.getElementById("quick-buttons").innerHTML = '<small style=font-style: italic;>' + '(this might take a while)' + '</small>';
+	} else if(method != "QuickSort"){
 		document.getElementById("quick-buttons").innerHTML = "";
 	}
 });

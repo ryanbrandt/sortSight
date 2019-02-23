@@ -9,7 +9,7 @@
 	<meta charset="utf-8">
   	<meta name="viewport" content="width=device-width, initial-scale=1">
  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
- 	<title>MergeSort Algorithm</title>
+ 	<title>QuickSort Algorithm</title>
 </head>
 <!-- JSP Content -->
 <%
@@ -57,6 +57,8 @@
 		for(int i = 0; i < sums.length; i++){
 			if(numTrials[i] > 0){
 				means[i] = sums[i]/numTrials[i];
+			} else {
+				means[i] = -1;
 			}
 		}
 		// jsonify data for canvasJS
@@ -65,8 +67,14 @@
 		Map<Object,Object> map = null;
 		List<Map<Object,Object>> list = new ArrayList<Map<Object,Object>>();
 		for(int j = 0; j < names.length; j++){
-			map = new HashMap<Object,Object>(); map.put("label", names[j]);
-			map.put("y", means[j]); list.add(map);
+			map = new HashMap<Object,Object>(); 
+			map.put("label", names[j]);
+			if(means[j] != -1){
+				map.put("y", means[j]); 
+			} else {
+				map.put("y", null);
+			}
+			list.add(map);
 		}
 		jsonified = gsonObj.toJson(list);
 		
@@ -123,7 +131,7 @@ window.onload = function() {
 var chart = new CanvasJS.Chart("chartContainer", {
 	theme: "light2",
 	title: {
-		text: "MergeSort Complexity"
+		text: "QuickSort Complexity"
 	},
 	axisX: {
 		title: "Input Size"

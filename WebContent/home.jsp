@@ -1,5 +1,7 @@
 
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.sql.*, javax.sql.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.sql.*, javax.sql.*, java.util.*"%>
+<%@ page import="com.google.gson.Gson"%>
+<%@ page import="com.google.gson.JsonObject"%>
 <!DOCTYPE html>
 <html>
 <!-- Head -->
@@ -65,8 +67,11 @@
 	      			<input type="submit"/>
       			</div> 
       		</form>
-      		<div class="container" style="height: 300px; overflow-y: scroll; width: 70%;">
+      		<br/>
+      		<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+      		<div class="container" style="height: 300px; overflow-y: scroll; width: 70%; margin-bottom: 50px;">
 		      			<% 
+		      			String[] jsonified = new String[5];
 		      			/* db connect */
 		      			try{
 		      				Class.forName("com.mysql.jdbc.Driver");
@@ -89,17 +94,83 @@
 		      					out.println("</tr>");
 		      				}
 		      				
-		      				// get summary statistics here
+		      				// retrieve data, organize into json for js plot
+		      				Gson gsonObj = new Gson();
+							Map<Object,Object> map = null;
+							List<Map<Object,Object>> list = null;
+							
+		      				String[] allMethods = {"MergeSort", "HeapSort", "QuickSort", "InsertionSort", "BubbleSort"};
+		      				// for each method, get all trials, get means for each sized input
+		      				for(int k = 0; k < allMethods.length; k++){
+		      					list = new ArrayList<Map<Object,Object>>();
+		      					ResultSet cur = st.executeQuery("select * from trials where '"+allMethods[k]+"' in(method)");
+		      					int[] numTrials = new int[6];
+		      					int[] sums = new int[6];
+		      					int [] means = new int[6];
+		      					
+		      					while(cur.next()){
+		      						
+		      						switch(cur.getString(4)){
+		      							
+		      						case "100":
+		      							numTrials[0]++;
+		      							sums[0] += Integer.parseInt(cur.getString(1));
+		      							break;
+		      						case "1000":
+		      							numTrials[1]++;
+		      							sums[1] += Integer.parseInt(cur.getString(1));
+		      							break;
+		      						case "10000":
+		      							numTrials[2]++;
+		      							sums[2] += Integer.parseInt(cur.getString(1));
+		      							break;
+		      						case "100000":
+		      							numTrials[3]++;
+		      							sums[3] += Integer.parseInt(cur.getString(1));
+		      							break;
+		      						case "1000000":
+		      							numTrials[4]++;
+		      							sums[4] += Integer.parseInt(cur.getString(1));
+		      							break;
+		      						case "10000000":
+		      							numTrials[5]++;
+		      							sums[5] += Integer.parseInt(cur.getString(1));
+		      						}
+		      					}
+		      					// get trial averages by input size
+		      					for(int c = 0; c < means.length; c++){
+		      						if(numTrials[c] > 0){
+		      							means[c] = sums[c]/numTrials[c];
+		      						} else {
+		      							// if no recorded data reflect on graph
+		      							means[c] = -1;
+		      						}
+		      					}
+		      					// jsonify for JS graph
+		      					String []names = {"100", "1,000", "10,000", "100,000", "1,000,000", "10,000,000"};
+		      					for(int j = 0; j < names.length; j++){
+		      						map = new HashMap<Object,Object>(); 
+		      						if(means[j] != -1){
+			      						map.put("y", means[j]);
+		      						} else {
+		      							map.put("y", null);
+		      						}
+		      						map.put("label", names[j]);
+		      						list.add(map);
+		      					}
+		      					jsonified[k] = gsonObj.toJson(list);
 		      				
+		      				}
 		     				
 		      			} catch(Exception e){
 		      				// throw error to js log
 		      				out.println("hmm, I'm having trouble connecting to my database :(");
 		      				out.println("<script>console.log(" + "\"" + e.getClass().getCanonicalName() + "\"" + ");</script>");
+		      				out.println(e);
 		      				
 		      			}
 	      			%>
-	      		</div>
+	      		</div>	
     	</div>
     </div>
 </div>
@@ -108,12 +179,12 @@
 <div class="footer" style="position: absolute; bottom: 0; text-align: center; width: 100%; left: 0;">
 <small>SortSight 2019 &copy</small>
 </div>
-
 </body>
 <!-- JavaScript -->
 <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.js"></script>
 <script type="text/javascript">
-// add options if quicksort
+/* add options if quicksort, disclaimer if large n bubble/insertion */
 $('#method-drop').on('change', function(){
 	var val = $(this).val();
 	if(val === "QuickSort"){
@@ -126,7 +197,7 @@ $('#method-drop').on('change', function(){
 		document.getElementById("quick-buttons").innerHTML = "";
 	}
 });
-//other end for large n bubblesort
+/* other end for large n bubble/insertion */
 $('#size-drop').on('change', function(){
 	var size = $(this).val();
 	var method = document.getElementById("method-drop").value;
@@ -136,6 +207,74 @@ $('#size-drop').on('change', function(){
 		document.getElementById("quick-buttons").innerHTML = "";
 	}
 });
+/* make graph */
+window.onload = function () {
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	title:{
+		text: "Algorithm Trial Averages"
+	},
+	axisX: {
+		title: "Input Size"
+		
+	},
+	axisY: {
+		title: "Runtime (ms)"
+		
+	},
+	legend:{
+		cursor: "pointer",
+		fontSize: 16,
+		itemclick: toggleDataSeries
+	},
+	toolTip:{
+		shared: true
+	},
+	data: [{
+		name: "MergeSort",
+		type: "spline",
+		showInLegend: true,
+		dataPoints: <%out.print(jsonified[0]);%>
+	},
+	{
+		name: "HeapSort",
+		type: "spline",
+		showInLegend: true,
+		dataPoints: <%out.print(jsonified[1]);%>
+	},
+	{
+		name: "QuickSort",
+		type: "spline",
+		showInLegend: true,
+		dataPoints: <%out.print(jsonified[2]);%>
+	},
+	{
+		name: "InsertionSort",
+		type: "spline",
+		showInLegend: true,
+		dataPoints: <%out.print(jsonified[3]);%>
+	},
+	{
+		name: "BubbleSort",
+		type: "spline",
+		showInLegend: true,
+		dataPoints: <%out.print(jsonified[4]);%>
+	}]
+});
+chart.render();
+
+function toggleDataSeries(e){
+	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	}
+	else{
+		e.dataSeries.visible = true;
+	}
+	chart.render();
+}
+
+}
 </script>
 
 </html>

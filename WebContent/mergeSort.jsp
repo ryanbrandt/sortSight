@@ -57,6 +57,8 @@
 		for(int i = 0; i < sums.length; i++){
 			if(numTrials[i] > 0){
 				means[i] = sums[i]/numTrials[i];
+			} else {
+				means[i] = -1;
 			}
 		}
 		// jsonify data for canvasJS
@@ -66,7 +68,12 @@
 		List<Map<Object,Object>> list = new ArrayList<Map<Object,Object>>();
 		for(int j = 0; j < names.length; j++){
 			map = new HashMap<Object,Object>(); map.put("label", names[j]);
-			map.put("y", means[j]); list.add(map);
+			if(means[j] != -1){
+				map.put("y", means[j]); 
+			} else {
+				map.put("y", null);
+			}
+			list.add(map);
 		}
 		jsonified = gsonObj.toJson(list);
 		
@@ -123,7 +130,7 @@ window.onload = function() {
 var chart = new CanvasJS.Chart("chartContainer", {
 	theme: "light2",
 	title: {
-		text: "QuickSort Complexity"
+		text: "MergeSort Complexity"
 	},
 	axisX: {
 		title: "Input Size"

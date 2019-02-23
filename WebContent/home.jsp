@@ -1,5 +1,5 @@
 
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.sql.*, javax.sql.*"%>
 <!DOCTYPE html>
 <html>
 <!-- Head -->
@@ -15,14 +15,14 @@
   	<div class="row content">
   		<!-- Side Links -->
     	<div class="col-sm-2 sidenav">
-    		<br/><h2>More Resources</h2>
-    		<h3>Algorithms</h3>
-  			<a href="#">QuickSort</a><br/>
-  			<a href="#">MergeSort</a><br/>
-  			<a href="#">HeapSort</a><br/>
-  			<a href="#">InsertionSort</a><br/>
-  			<a href="#">BubbleSort</a>
-  			<br/><h3>Data Structures</h3>
+    		<br/><h2>Resources</h2>
+    		<h4>Algorithms</h4>
+  			<a href="quickSort.jsp">QuickSort</a><br/>
+  			<a href="mergeSort.jsp">MergeSort</a><br/>
+  			<a href="heapSort.jsp">HeapSort</a><br/>
+  			<a href="insertionSort.jsp">InsertionSort</a><br/>
+  			<a href="bubbleSort.jsp">BubbleSort</a>
+  			<br/><h4>Data Structures</h4>
   			<a href="#">Stack</a><br/>
   			<a href="#">Heap</a><br/>
   			<a href="#">Binary Tree</a><br/>
@@ -30,7 +30,7 @@
   			<a href="#">Hash Table</a><br/>
   			<a href="#">Graphs</a>
     	</div>
-    	<!-- Main Text -->
+    	<!-- Main Content -->
     	<div class="col-sm-8 text-left" id="test"> 
       		<h1>Welcome to SortSight!</h1>
       		<p>
@@ -65,12 +65,47 @@
 	      			<input type="submit"/>
       			</div> 
       		</form>
+      		<div class="container" style="height: 300px; overflow-y: scroll; width: 70%;">
+		      			<% 
+		      			/* db connect */
+		      			try{
+		      				Class.forName("com.mysql.jdbc.Driver");
+		      				Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sortApp", "ryan", "password");
+		      				Statement st = con.createStatement();
+		      				// get all trials 
+		      				ResultSet q = st.executeQuery("select * from trials");
+		      				// put into table -- UPDATE ME!
+		      				out.println("<table width=250 align=center>");
+		      				out.println("<tr>");
+		      				out.println("<th style=padding:10px;>Runtime</th>");
+		      				out.println("<th style=padding:10px;>Algorithm</th>");
+		      				out.println("<th style=padding:10px;>Input</th>");
+		      				out.println("</tr>");
+		      				while(q.next()){
+		      				
+		      					out.println("<td>" + q.getString(1) + "ms</td>");
+		      					out.println("<td>" + q.getString(2) + "</td>");
+		      					out.println("<td>" + q.getString(4) + "</td>");
+		      					out.println("</tr>");
+		      				}
+		      				
+		      				// get summary statistics here
+		      				
+		     				
+		      			} catch(Exception e){
+		      				// throw error to js log
+		      				out.println("hmm, I'm having trouble connecting to my database :(");
+		      				out.println("<script>console.log(" + "\"" + e.getClass().getCanonicalName() + "\"" + ");</script>");
+		      				
+		      			}
+	      			%>
+	      		</div>
     	</div>
     </div>
 </div>
 
 <!-- Footer -->
-<div class="footer" style="position: fixed; bottom: 0; text-align: center; width: 100%; left: 0;">
+<div class="footer" style="position: absolute; bottom: 0; text-align: center; width: 100%; left: 0;">
 <small>SortSight 2019 &copy</small>
 </div>
 

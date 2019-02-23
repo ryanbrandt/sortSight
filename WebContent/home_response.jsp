@@ -15,14 +15,14 @@
   	<div class="row content">
   		<!-- Side Links -->
     	<div class="col-sm-2 sidenav">
-    		<br/><h2>More Resources</h2>
-    		<h3>Algorithms</h3>
-  			<a href="#">QuickSort</a><br/>
-  			<a href="#">MergeSort</a><br/>
-  			<a href="#">HeapSort</a><br/>
-  			<a href="#">InsertionSort</a><br/>
-  			<a href="#">BubbleSort</a>
-  			<br/><h3>Data Structures</h3>
+    		<br/><h2>Resources</h2>
+    		<h4>Algorithms</h4>
+  			<a href="quickSort.jsp">QuickSort</a><br/>
+  			<a href="mergeSort.jsp">MergeSort</a><br/>
+  			<a href="heapSort.jsp">HeapSort</a><br/>
+  			<a href="insertionSort.jsp">InsertionSort</a><br/>
+  			<a href="bubbleSort.jsp">BubbleSort</a>
+  			<br/><h4>Data Structures</h4>
   			<a href="#">Stack</a><br/>
   			<a href="#">Heap</a><br/>
   			<a href="#">Binary Tree</a><br/>
@@ -115,9 +115,9 @@
 		      			}
 		      			
 		      			%>
-		      			</div> 
+		      			</div>
       				</form>
-      				<div class="container" style="height: 200px; overflow-y: scroll;">
+      				<div class="container" style="height: 300px; overflow-y: scroll; width: 70%;">
 		      			<% 
 		      			/* db connect */
 		      			try{
@@ -131,7 +131,7 @@
 		      				// get all trials 
 		      				ResultSet q = st.executeQuery("select * from trials");
 		      				// put into table -- UPDATE ME!
-		      				out.println("<table>");
+		      				out.println("<table width=250 align=center>");
 		      				out.println("<tr>");
 		      				out.println("<th style=padding:10px;>Runtime</th>");
 		      				out.println("<th style=padding:10px;>Algorithm</th>");
@@ -145,30 +145,30 @@
 		      					out.println("</tr>");
 		      				}
 		      				
-		      				// get summary statistics here
-		      				
 		     				
 		      			} catch(Exception e){
 		      				// throw error to js log
 		      				out.println("hmm, I'm having trouble connecting to my database :(");
-		      				out.println("<script>console.log(" + e + ")</script>");
+		      				out.println("<script>console.log(" + "\"" + e.getClass().getCanonicalName() + "\"" + ");</script>");
 		      				
 		      			}
-	      			%>
+	    			%>
 	      		</div>
     	</div>
     </div>
 </div>
+<div id="chart-container"></div>
 
 
 <!-- Footer -->
-<div class="footer" style="position: fixed; bottom: 0; text-align: center; width: 100%; left: 0;">
+<div class="footer" style="position: absolute; bottom: 0; text-align: center; width: 100%; left: 0;">
 <small>SortSight 2019 &copy</small>
 </div>
 
 </body>
 <!-- JavaScript -->
 <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="crossorigin="anonymous"></script>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 <script type="text/javascript">
 //add options if quicksort & add disclaimer if large n bubblesort :)
 $('#method-drop').on('change', function(){
@@ -193,6 +193,7 @@ $('#size-drop').on('change', function(){
 		document.getElementById("quick-buttons").innerHTML = "";
 	}
 });
+
 </script>
 
 </html>

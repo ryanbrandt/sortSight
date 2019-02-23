@@ -13,6 +13,7 @@ The application collects the data from these sorting trials and provides users w
 
 (TODO) Provides users with pseudo-code and complexity derivation of the sorting algorithms.
 
+(TODO) Deploy with AWS RDS and Elastic Beanstalk
 ## Tech
 
 1. Java/JSP/JDBC

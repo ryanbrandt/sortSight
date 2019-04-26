@@ -11,9 +11,7 @@ Allows users to test out fundamental sorting algorithms, which I manually implem
 
 The application collects the data from these sorting trials and provides users with some summary statistics regarding the different methods for different sizes of input and some visuals so users can better understand the asymptotic behavior of the different algorithms.
 
-(TODO) Provides users with pseudo-code and complexity derivation of the sorting algorithms.
 
-(TODO) Deploy with AWS RDS and Elastic Beanstalk
 ## Tech
 
 1. Java/JSP/JDBC
